@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Infinite Scroll Extension Icons</h1>
+    <p>右クリックして画像を保存してください</p>
+    
+    <canvas id="icon16" width="16" height="16"></canvas>
+    <canvas id="icon48" width="48" height="48"></canvas>
+    <canvas id="icon128" width="128" height="128"></canvas>
+    
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // 背景
+            ctx.fillStyle = '#007bff';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 矢印を描画
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.15;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // 下向き矢印
+            ctx.beginPath();
+            ctx.moveTo(size * 0.5, size * 0.2);
+            ctx.lineTo(size * 0.5, size * 0.7);
+            ctx.moveTo(size * 0.3, size * 0.5);
+            ctx.lineTo(size * 0.5, size * 0.7);
+            ctx.lineTo(size * 0.7, size * 0.5);
+            ctx.stroke();
+            
+            // 点線
+            ctx.setLineDash([size * 0.1, size * 0.05]);
+            ctx.beginPath();
+            ctx.moveTo(size * 0.5, size * 0.75);
+            ctx.lineTo(size * 0.5, size * 0.95);
+            ctx.stroke();
+        }
+        
+        drawIcon('icon16', 16);
+        drawIcon('icon48', 48);
+        drawIcon('icon128', 128);
+    </script>
+</body>
+</html>
