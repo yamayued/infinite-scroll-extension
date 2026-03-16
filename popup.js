@@ -2,11 +2,39 @@ let isScrolling = false;
 let startTime = null;
 let elapsedInterval = null;
 
+async function ensureInjectableTab(tab) {
+    if (!tab?.url) {
+        throw new Error('No active tab');
+    }
+
+    if (
+        tab.url.startsWith('chrome://') ||
+        tab.url.startsWith('chrome-extension://') ||
+        tab.url.startsWith('edge://') ||
+        tab.url.startsWith('about:')
+    ) {
+        throw new Error('unsupported-page');
+    }
+}
+
+async function ensureInfiniteScrollInjected(tabId) {
+    try {
+        await chrome.tabs.sendMessage(tabId, { type: 'GET_STATUS' });
+    } catch (error) {
+        await chrome.scripting.executeScript({
+            target: { tabId },
+            files: ['content.js']
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 初期状態を取得
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
     try {
+        await ensureInjectableTab(tab);
+        await ensureInfiniteScrollInjected(tab.id);
         const response = await chrome.tabs.sendMessage(tab.id, { type: 'GET_STATUS' });
         if (response && response.isScrolling) {
             setScrollingUI(true);
@@ -39,6 +67,8 @@ async function startScroll() {
     
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        await ensureInjectableTab(tab);
+        await ensureInfiniteScrollInjected(tab.id);
         
         // コンテンツスクリプトに開始メッセージを送信
         await chrome.tabs.sendMessage(tab.id, {
@@ -60,6 +90,7 @@ async function startScroll() {
 async function stopScroll() {
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        await ensureInjectableTab(tab);
         
         await chrome.tabs.sendMessage(tab.id, { type: 'STOP_SCROLL' });
         
@@ -106,6 +137,7 @@ async function updateCurrentStats() {
     
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        await ensureInjectableTab(tab);
         const response = await chrome.tabs.sendMessage(tab.id, { type: 'GET_STATS' });
         
         if (response) {

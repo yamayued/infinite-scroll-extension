@@ -5,7 +5,8 @@
   "description": "ページを無限にスクロールし続ける拡張機能",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -14,12 +15,5 @@
       "48": "icon48.png",
       "128": "icon128.png"
     }
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_end"
-    }
-  ]
+  }
 }
